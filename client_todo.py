@@ -1,7 +1,7 @@
 import socket
 
 host = 'localhost' # assumes server is running locally
-port = # port number should be the same as the server
+port = 8888# port number should be the same as the server
 
 def send_command(command):
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
