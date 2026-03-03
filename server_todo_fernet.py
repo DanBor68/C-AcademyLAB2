@@ -44,9 +44,48 @@ class TodoList:
             result += f"{i}. {status} {item.title}: {item.description}\n"
         return result
 
-host = 'localhost'
-port = 8888
 
+
+import os
+
+def load_encrypted_todo():
+    # ---------- KEY ----------
+    if not os.path.exists('key.fernet'):
+        print("Key not found. Creating new key...")
+        key = Fernet.generate_key()
+        with open('key.fernet', 'wb') as key_file:
+            key_file.write(key)
+    else:
+        with open('key.fernet', 'rb') as key_file:
+            key = key_file.read()
+
+    cipher = Fernet(key)
+
+    # ---------- TODO FILE ----------
+    if not os.path.exists('todo_list.fernet'):
+        print("Todo file not found. Creating empty file...")
+        with open('todo_list.fernet', 'wb'):
+            pass
+
+    # ---------- LOAD DATA ----------
+    todo_list = TodoList()
+
+    with open('todo_list.fernet', 'rb') as file:
+        for line in file:
+            c_item = line.strip()
+            if c_item:
+                try:
+                    plain_item = cipher.decrypt(c_item).decode()
+                    title, description, completed = plain_item.split(",")
+                    todo_list.add_item(title, description)
+                except Exception as e:
+                    print("Error decrypting line:", e)
+
+    return todo_list, key, cipher
+
+host = 'localhost'
+port = 8080
+todo_list, key, cipher = load_encrypted_todo()
 # load key
 with open('key.fernet', 'rb') as key_file:
     key = key_file.read()
