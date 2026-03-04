@@ -3,7 +3,7 @@ import socket
 import threading
 
 HOST = "127.0.0.1"   # altera se quiseres aceitar fora da máquina local
-PORT = 5555          # Escolhe uma porta livre e usa a mesma no cliente
+PORT = 8888          # Escolhe uma porta livre e usa a mesma no cliente
 
 # Estrutura simples em memória; persistência não é pedida na alínea 1
 tasks = []  # cada item: {"id": int, "text": str, "done": bool}
