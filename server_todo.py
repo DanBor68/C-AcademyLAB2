@@ -36,7 +36,7 @@ class TodoList:
         return result
 
 host = 'localhost'
-port = # port number to listen on
+port = 8888 # port number to listen on
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind((host, port))
