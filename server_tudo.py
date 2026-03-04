@@ -3,7 +3,7 @@ import socket
 import threading
 
 HOST = "127.0.0.1"   # altera se quiseres aceitar fora da máquina local
-PORT = 5555          # escolhe uma porta livre e usa a mesma no cliente
+PORT = 5555          # Escolhe uma porta livre e usa a mesma no cliente
 
 # Estrutura simples em memória; persistência não é pedida na alínea 1
 tasks = []  # cada item: {"id": int, "text": str, "done": bool}
@@ -23,36 +23,40 @@ HELP = (
 
 def handle_cmd(cmdline: str) -> str:
     global _next_id
+
     parts = cmdline.strip().split(" ", 1)
     if not parts or not parts[0]:
         return "ERR comando vazio\n"
-    cmd = parts[0].upper()
 
+    cmd = parts[0].upper()
+    arg = parts[1].strip() if len(parts) > 1 else ""
+
+    # ADD
     if cmd == "ADD":
-        if len(parts) < 2 or not parts[1].strip():
+        if not arg:
             return "ERR uso: ADD <texto>\n"
-        text = parts[1].strip()
         with lock:
-            global tasks
             tid = _next_id
             _next_id += 1
-            tasks.append({"id": tid, "text": text, "done": False})
+            tasks.append({"id": tid, "text": arg, "done": False})
         return f"OK added id={tid}\n"
 
+    # LIST
     if cmd == "LIST":
         with lock:
             if not tasks:
                 return "OK (vazio)\n"
-            lines = []
-            for t in tasks:
-                status = "✓" if t["done"] else " "
-                lines.append(f"[{status}] {t['id']}: {t['text']}")
+            lines = [
+                f"[{'✓' if t['done'] else ' '}] {t['id']}: {t['text']}"
+                for t in tasks
+            ]
         return "OK\n" + "\n".join(lines) + "\n"
 
+    # DONE
     if cmd == "DONE":
-        if len(parts) < 2 or not parts[1].isdigit():
+        if not arg.isdigit():
             return "ERR uso: DONE <id>\n"
-        tid = int(parts[1])
+        tid = int(arg)
         with lock:
             for t in tasks:
                 if t["id"] == tid:
@@ -60,27 +64,33 @@ def handle_cmd(cmdline: str) -> str:
                     return f"OK done id={tid}\n"
         return "ERR id não encontrado\n"
 
+    # COUNT
     if cmd == "COUNT":
         with lock:
             return f"OK total={len(tasks)}\n"
 
+    # COUNT_OPEN
     if cmd == "COUNT_OPEN":
         with lock:
             open_count = sum(1 for t in tasks if not t["done"])
             return f"OK abertas={open_count}\n"
 
+    # CLEAR
     if cmd == "CLEAR":
         with lock:
             tasks.clear()
         return "OK cleared\n"
 
+    # HELP
     if cmd in ("HELP", "?"):
         return HELP
 
+    # QUIT
     if cmd == "QUIT":
         return "BYE\n"
 
     return "ERR comando desconhecido. Use HELP\n"
+
 
 def client_thread(conn: socket.socket, addr):
     with conn:
@@ -92,20 +102,29 @@ def client_thread(conn: socket.socket, addr):
                 if not chunk:
                     return
                 data += chunk
+
             resp = handle_cmd(data.decode("utf-8", errors="ignore"))
             conn.sendall(resp.encode("utf-8"))
+
             if resp.startswith("BYE"):
                 return
+
 
 def main():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((HOST, PORT))
         s.listen(5)
-        print(f"Servidor escutar em {HOST}:{PORT}")
+        print(f"Servidor a escutar em {HOST}:{PORT}")
+
         while True:
             conn, addr = s.accept()
             print("Cliente ligado:", addr)
-            threading.Thread(target=client_thread, args=(conn, addr), daemon=True).start()
+            threading.Thread(
+                target=client_thread,
+                args=(conn, addr),
+                daemon=True
+            ).start()
+
 
 if __name__ == "__main__":
     main()
