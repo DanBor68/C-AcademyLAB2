@@ -3,7 +3,7 @@ import socket
 import sys
 
 HOST = "127.0.0.1"   # tem de corresponder ao servidor
-PORT = 5555
+PORT = 8888
 
 def send(cmd: str) -> str:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:

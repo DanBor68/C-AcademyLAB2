@@ -1,0 +1,2 @@
+Foi calculado o hash SHA512 do ficheiro 'commons-crypto-1.2.0-src.zip'. O valor obtido foi comparado com o disponibilizado oficialmente, confirmando a integridade do ficheiro.
+Após modificação de um único byte no ficheiro, verificou-se alteração completa do hash, demonstrando o efeito avalanche característico das funções hash criptográficas.
