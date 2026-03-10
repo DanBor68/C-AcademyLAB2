@@ -114,21 +114,6 @@ curl http://127.0.0.1:5000/list
 
 ---
 
-## 📂 Estrutura do Repositório
-
-```
-/C-AcademyLAB2
- ├── server_todo_fernet.py      # Servidor + API + gestão de chave
- ├── client_test.py             # Cliente de testes com requests
- ├── key.fernet                 # (gerado automaticamente) chave Fernet
- ├── todo_list.fernet           # (gerado automaticamente) tarefas cifradas
- ├── README.md                  # Documentação do projeto
- └── docs/
-      └── Lab2-enunciado.pdf    # Enunciado oficial do laboratório
-```
-
----
-
 ## 🔐 Detalhes da Criptografia
 📘 C‑Academy LAB2 — Sistema Cliente‑Servidor com Criptografia Fernet
 📌 Descrição Geral
